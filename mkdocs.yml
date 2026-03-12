@@ -1,0 +1,52 @@
+site_name: article-explainer-agent
+repo_url: https://github.com/Paraschamoli/article-explainer-agent
+site_url: https://Paraschamoli.github.io/article-explainer-agent
+site_description: A Bindu AI agent for intelligent task handling
+site_author: Paras Chamoli
+edit_uri: edit/main/docs/
+repo_name: Paraschamoli/article-explainer-agent
+copyright: Maintained by <a href="https://Paraschamoli.com">Paraschamoli</a>.
+
+nav:
+  - Home: index.md
+  - Modules: modules.md
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: ["src/article_explainer_agent"]
+theme:
+  name: material
+  feature:
+    tabs: true
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: deep orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: deep orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Paraschamoli/article-explainer-agent
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/article-explainer-agent
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true

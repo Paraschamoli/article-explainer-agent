@@ -1,0 +1,126 @@
+[project]
+name = "article-explainer-agent"
+version = "0.0.1"
+description = "A Bindu AI agent for intelligent task handling"
+authors = [{ name = "Paras Chamoli", email = "paras@getbindu.com" }]
+readme = "README.md"
+keywords = ['python']
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "bindu==2026.9.4",
+    "langgraph",
+    "langgraph-swarm",
+    "langchain_openai",
+    "langchain_community",
+    "langchain_text_splitters",
+    "langchain",
+    "python-dotenv",
+    "requests",
+    "pyperclip",
+    "rich",
+    "openai",
+    "sqlalchemy",
+    "mem0ai",
+    "ddgs",
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Homepage = "https://Paraschamoli.github.io/article-explainer-agent/"
+Repository = "https://github.com/Paraschamoli/article-explainer-agent"
+Documentation = "https://Paraschamoli.github.io/article-explainer-agent/"
+
+[dependency-groups]
+dev = [
+    "pytest>=7.2.0",
+    "pytest-asyncio>=0.23.0",
+    "pre-commit>=2.20.0",
+    "tox-uv>=1.11.3",
+    "ty>=0.0.1a16",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.11.5",
+    "mkdocs>=1.4.2",
+    "mkdocs-material>=8.5.10",
+    "mkdocstrings[python]>=0.26.1",
+    "types-requests>=2.31.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["article_explainer_agent"]
+
+[tool.ty.environment]
+python = "./.venv"
+python-version = "3.12"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+fix = true
+
+[tool.ruff.lint]
+select = [
+    # flake8-2020
+    "YTT",
+    # flake8-bandit
+    "S",
+    # flake8-bugbear
+    "B",
+    # flake8-builtins
+    "A",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # mccabe
+    "C90",
+    # pycodestyle
+    "E", "W",
+    # pyflakes
+    "F",
+    # pygrep-hooks
+    "PGH",
+    # pyupgrade
+    "UP",
+    # ruff
+    "RUF",
+    # tryceratops
+    "TRY",
+]
+ignore = [
+    # LineTooLong
+    "E501",
+    # DoNotAssignLambda
+    "E731",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
+
+[tool.ruff.format]
+preview = true
+
+[tool.coverage.report]
+skip_empty = true
+
+[tool.coverage.run]
+branch = true
+source = ["article_explainer_agent"]
