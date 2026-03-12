@@ -23,12 +23,8 @@ from bindu.penguin.bindufy import bindufy
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
-from langchain_core.messages import HumanMessage
-from langgraph_swarm import SwarmState
 
 from .agents import run_article_explanation
-from .service import ContentLoader
-
 
 # Load environment variables from .env file
 load_dotenv()
@@ -118,15 +114,13 @@ class ArticleExplainerAgent:
 *Model: {self.model_name}*
 """
 
-            return response
-
         except Exception as e:
             error_msg = f"Error during article explanation: {e!s}"
             print(f"❌ {error_msg}")
             traceback.print_exc()
             return error_msg
-
-
+        else:
+            return response
 
 
 async def initialize_agent() -> None:

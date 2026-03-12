@@ -8,6 +8,9 @@ from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
 
+# Error messages
+NO_API_KEY_ERROR = "No API key provided. Set OPENROUTER_API_KEY environment variable."
+
 
 class ArticleAgent:
     """Base class for article explainer agents."""
@@ -29,7 +32,7 @@ class ArticleAgent:
                 temperature=0,
             )
         else:
-            raise ValueError("No API key provided. Set OPENROUTER_API_KEY environment variable.")
+            raise ValueError(NO_API_KEY_ERROR)
 
         self.prompt_template = self._create_prompt_template()
         self.chain = self.prompt_template | self.model | StrOutputParser()
@@ -47,9 +50,9 @@ class ArticleAgent:
                 - Code examples and pseudocode
                 - APIs, tools, and technologies
                 - Development patterns and best practices
-                
+
                 DO NOT provide summaries, explanations for beginners, analogies, or security analysis.
-                
+
                 Article Content: {article_content}
             """,
             "Summarizer": """
@@ -62,9 +65,9 @@ class ArticleAgent:
                 - Total length 80-120 words
                 - Most important findings and conclusions
                 - Quick overview for busy readers
-                
+
                 DO NOT provide technical details, explanations, analogies, or security analysis.
-                
+
                 Article Content: {article_content}
             """,
             "Explainer": """
@@ -77,9 +80,9 @@ class ArticleAgent:
                 - Step-by-step breakdowns
                 - Beginner-friendly language
                 - Conceptual understanding (not technical implementation)
-                
+
                 DO NOT provide code examples, summaries, analogies, or security analysis.
-                
+
                 Article Content: {article_content}
             """,
             "Analogy Creator": """
@@ -92,9 +95,9 @@ class ArticleAgent:
                 - Real-world comparisons
                 - Metaphors that make abstract concepts concrete
                 - Non-technical explanations
-                
+
                 DO NOT provide technical details, summaries, step-by-step explanations, or security analysis.
-                
+
                 Article Content: {article_content}
             """,
             "Vulnerability Expert": """
@@ -107,9 +110,9 @@ class ArticleAgent:
                 - Potential risks and threats
                 - Mitigation strategies
                 - Security best practices
-                
+
                 DO NOT provide technical implementation details, summaries, explanations, or analogies.
-                
+
                 Article Content: {article_content}
             """,
         }
@@ -121,18 +124,24 @@ class ArticleAgent:
         print(f"{self.role} is running...")
         try:
             response = await self.chain.ainvoke({"article_content": self.article_content})
-            return response
         except Exception as e:
             print(f"Error occurred in {self.role}: {e}")
             return f"Error: {e!s}"
+        else:
+            return response
 
 
 class MultiSpecialistTeam:
     """Agent that synthesizes reports from multiple specialists."""
 
     def __init__(
-        self, developer_report: str, summarizer_report: str, explainer_report: str, 
-        analogy_creator_report: str, vulnerability_expert_report: str, model_name: str = "gpt-4o"
+        self,
+        developer_report: str,
+        summarizer_report: str,
+        explainer_report: str,
+        analogy_creator_report: str,
+        vulnerability_expert_report: str,
+        model_name: str = "gpt-4o",
     ):
         """Initialize multi-specialist team with specialist reports."""
         self.developer_report = developer_report
@@ -146,31 +155,31 @@ class MultiSpecialistTeam:
         synthesis_template = """
             Act like a multi-specialist team of article analysis experts.
             You will receive an article analysis from a Developer, Summarizer, Explainer, Analogy Creator, and Vulnerability Expert.
-            
+
             Task: Create a comprehensive, well-structured analysis that combines all perspectives WITHOUT repetition.
-            
+
             Structure the output EXACTLY as follows:
-            
+
             # Comprehensive Analysis of [Topic]
-            
+
             ## Developer Perspective
             [Technical implementation details, code examples, APIs, tools]
-            
-            ## Summarizer Perspective  
+
+            ## Summarizer Perspective
             [Concise summary, key points, TL;DR]
-            
+
             ## Explainer Perspective
             [Step-by-step explanation, beginner-friendly breakdown]
-            
+
             ## Analogy Creator Perspective
             [Real-world analogies, metaphors, simple comparisons]
-            
+
             ## Vulnerability Expert Perspective
             [Security risks, vulnerabilities, mitigation strategies]
-            
+
             ## Final Synthesis
             [Comprehensive conclusion combining all insights]
-            
+
             ---
             *Analysis performed by AI Article Explainer Agent*
             *Specialist inputs: Developer, Summarizer, Explainer, Analogy Creator, Vulnerability Expert*
@@ -203,7 +212,7 @@ class MultiSpecialistTeam:
                 temperature=0,
             )
         else:
-            raise ValueError("No API key provided. Set OPENROUTER_API_KEY environment variable.")
+            raise ValueError(NO_API_KEY_ERROR)
 
         # Create synthesis chain
         self.chain = PromptTemplate.from_template(synthesis_template) | model | StrOutputParser()
@@ -219,10 +228,11 @@ class MultiSpecialistTeam:
                 "analogy_creator_report": self.analogy_creator_report,
                 "vulnerability_expert_report": self.vulnerability_expert_report,
             })
-            return response
         except Exception as e:
             print(f"Error occurred in MultiSpecialistTeam: {e}")
             return f"Error: {e!s}"
+        else:
+            return response
 
 
 class Developer(ArticleAgent):

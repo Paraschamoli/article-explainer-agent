@@ -7,8 +7,7 @@
 #
 #  Thank you users! We ❤️ you! - 🌻
 
-"""article-explainer-agent - An Bindu Agent.
-"""
+"""article-explainer-agent - An Bindu Agent."""
 
 from article_explainer_agent.__version__ import __version__
 from article_explainer_agent.main import (

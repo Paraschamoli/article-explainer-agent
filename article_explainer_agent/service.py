@@ -1,32 +1,34 @@
 """Service components for article explainer agent."""
 
 import os
-import tempfile
-from typing import List
+
+from langchain.schema import Document
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain.schema import Document
+
+# Error messages
+UNSUPPORTED_FILE_ERROR = "Unsupported file format: {file_path}"
+NO_API_KEY_ERROR = "No API key provided. Set OPENAI_API_KEY or OPENROUTER_API_KEY environment variable."
 
 
 class ContentLoader:
     """Loads and prepares text content from .pdf documents using PyPDF."""
 
     def __init__(self, chunk_size: int = 1000, chunk_overlap: int = 100):
-        self.splitter = RecursiveCharacterTextSplitter(
-            chunk_size=chunk_size, chunk_overlap=chunk_overlap
-        )
+        """Initialize content loader with chunk size and overlap."""
+        self.splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
 
-    def load(self, file_path: str) -> List[Document]:
+    def load(self, file_path: str) -> list[Document]:
         """Load and split content from a file."""
         if file_path.endswith(".pdf"):
             loader = PyPDFLoader(file_path)
         else:
-            raise ValueError(f"Unsupported file format: {file_path}")
+            raise ValueError(UNSUPPORTED_FILE_ERROR.format(file_path=file_path))
 
         docs = loader.load()
         return self.splitter.split_documents(docs)
 
-    def get_text(self, file_path: str, max_chunks: int = None) -> str:
+    def get_text(self, file_path: str, max_chunks: int | None = None) -> str:
         """Load content and return concatenated plain text."""
         docs = self.load(file_path)
         if max_chunks:
@@ -35,8 +37,9 @@ class ContentLoader:
 
 
 def get_chat_model(model_name: str = "openai:gpt-4.1-mini"):
-    """Returns a LangChain chat model initialized with API key from the environment."""
+    """Return a LangChain chat model initialized with API key from the environment."""
     from dotenv import load_dotenv
+
     load_dotenv()
     api_key = os.getenv("OPENAI_API_KEY")
 
@@ -46,6 +49,7 @@ def get_chat_model(model_name: str = "openai:gpt-4.1-mini"):
         if openrouter_api_key:
             from langchain_openai import ChatOpenAI
             from pydantic import SecretStr
+
             return ChatOpenAI(
                 model_name="gpt-4o",
                 openai_api_key=SecretStr(openrouter_api_key),
@@ -53,7 +57,8 @@ def get_chat_model(model_name: str = "openai:gpt-4.1-mini"):
                 temperature=0,
             )
         else:
-            raise ValueError("No API key provided. Set OPENAI_API_KEY or OPENROUTER_API_KEY environment variable.")
-    
+            raise ValueError(NO_API_KEY_ERROR)
+
     from langchain.chat_models import init_chat_model
+
     return init_chat_model(model=model_name, api_key=api_key)
