@@ -72,7 +72,7 @@ class ArticleExplainerAgent:
 
         if openrouter_api_key:
             # Use OpenRouter API key with OpenAI client
-            self.model = ChatOpenAI(
+            self.model = ChatOpenAI(  # type: ignore[call-arg]
                 model_name=model_name,
                 openai_api_key=SecretStr(openrouter_api_key),
                 openai_api_base="https://openrouter.ai/api/v1",
@@ -179,7 +179,7 @@ async def cleanup() -> None:
     print("🧹 Cleaning up Article Explainer Agent resources...")
 
 
-def main():
+def main() -> None:
     """Run the main entry point for the Article Explainer Agent."""
     parser = argparse.ArgumentParser(description="Bindu Article Explainer Agent")
     parser.add_argument(

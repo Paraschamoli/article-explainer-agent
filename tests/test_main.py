@@ -6,7 +6,7 @@ from article_explainer_agent.main import handler
 
 
 @pytest.mark.asyncio
-async def test_handler_returns_response():
+async def test_handler_returns_response() -> None:
     """Test that handler accepts messages and returns a response."""
     messages = [{"role": "user", "content": "Hello, how are you?"}]
 
@@ -29,7 +29,7 @@ async def test_handler_returns_response():
 
 
 @pytest.mark.asyncio
-async def test_handler_with_multiple_messages():
+async def test_handler_with_multiple_messages() -> None:
     """Test that handler processes multiple messages correctly."""
     messages = [
         {"role": "system", "content": "You are a helpful assistant."},
@@ -52,7 +52,7 @@ async def test_handler_with_multiple_messages():
 
 
 @pytest.mark.asyncio
-async def test_handler_initialization():
+async def test_handler_initialization() -> None:
     """Test that handler initializes on first call."""
     _messages = [{"role": "user", "content": "Test"}]
 

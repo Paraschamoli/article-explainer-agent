@@ -25,7 +25,7 @@ class ArticleAgent:
 
         if openrouter_api_key:
             # Use OpenRouter API key with OpenAI client
-            self.model = ChatOpenAI(
+            self.model = ChatOpenAI(  # type: ignore[call-arg]
                 model_name=model_name,
                 openai_api_key=SecretStr(openrouter_api_key),
                 openai_api_base="https://openrouter.ai/api/v1",
@@ -205,7 +205,7 @@ class MultiSpecialistTeam:
         openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
 
         if openrouter_api_key:
-            model = ChatOpenAI(
+            model = ChatOpenAI(  # type: ignore[call-arg]
                 model_name=model_name,
                 openai_api_key=SecretStr(openrouter_api_key),
                 openai_api_base="https://openrouter.ai/api/v1",

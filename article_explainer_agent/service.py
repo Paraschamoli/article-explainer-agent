@@ -1,6 +1,7 @@
 """Service components for article explainer agent."""
 
 import os
+from typing import Any
 
 from langchain.schema import Document
 from langchain_community.document_loaders import PyPDFLoader
@@ -36,7 +37,7 @@ class ContentLoader:
         return "\n\n".join([doc.page_content for doc in docs])
 
 
-def get_chat_model(model_name: str = "openai:gpt-4.1-mini"):
+def get_chat_model(model_name: str = "openai:gpt-4.1-mini") -> Any:
     """Return a LangChain chat model initialized with API key from the environment."""
     from dotenv import load_dotenv
 
@@ -50,7 +51,7 @@ def get_chat_model(model_name: str = "openai:gpt-4.1-mini"):
             from langchain_openai import ChatOpenAI
             from pydantic import SecretStr
 
-            return ChatOpenAI(
+            return ChatOpenAI(  # type: ignore[call-arg]
                 model_name="gpt-4o",
                 openai_api_key=SecretStr(openrouter_api_key),
                 openai_api_base="https://openrouter.ai/api/v1",
