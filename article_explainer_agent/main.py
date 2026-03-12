@@ -53,7 +53,7 @@ def load_config() -> dict[str, Any]:
         "name": "article-explainer-agent",
         "description": "AI-powered multi-specialist article explainer assistant",
         "deployment": {
-            "url": "http://127.0.0.1:3774",
+            "url": "http://127.0.0.1:3773",
             "expose": True,
             "protocol_version": "1.0.0",
         },
