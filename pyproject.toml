@@ -1,7 +1,7 @@
 [project]
 name = "article-explainer-agent"
 version = "0.0.1"
-description = "A Bindu AI agent for intelligent task handling"
+description = "AI article explainer agent that combines multiple specialist perspectives (Developer, Summarizer, Explainer, Analogy Creator, Vulnerability Expert) to provide comprehensive article analysis and explanations."
 authors = [{ name = "Paras Chamoli", email = "paras@getbindu.com" }]
 readme = "README.md"
 keywords = ['python']
