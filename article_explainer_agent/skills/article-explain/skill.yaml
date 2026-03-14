@@ -5,17 +5,16 @@ author: paras@getbindu.com
 
 # Description
 description: |
-  AI-powered article explanation skill that combines multiple specialist perspectives to provide comprehensive analysis of technical articles.
-  Features code examples, summaries, detailed explanations, analogies, and critical analysis from 5 specialized agents.
+  Multi-agent article analysis system using LangChain and OpenRouter.
+  Coordinates 5 specialist agents to analyze text from different perspectives: technical implementation, summarization, conceptual explanation, analogies, and security vulnerabilities.
 
 # Tags and Modes
 tags:
-  - article-explanation
-  - technical-analysis
-  - code-examples
+  - article-analysis
+  - multi-agent
+  - technical-explanation
   - summarization
-  - analogies
-  - critical-analysis
+  - security-analysis
 
 input_modes:
   - text/plain
@@ -27,48 +26,46 @@ output_modes:
 
 # Example Queries
 examples:
-  - "Explain this technical article with code examples"
-  - "Summarize this article and provide analogies for complex concepts"
-  - "Analyze this article for potential vulnerabilities and methodological issues"
-  - "Provide a detailed explanation with code samples for the key concepts"
-  - "Give me a TL;DR with technical details and critical analysis"
+  - "Explain the following technical article topic using multiple perspectives including developer analysis, summarization, conceptual explanation, analogy creation, and security or vulnerability considerations"
+  - "Analyze this article about RAG systems from developer, summarizer, explainer, analogy, and security perspectives"
+  - "Provide comprehensive analysis of microservices architecture with code examples, summaries, explanations, analogies, and vulnerability assessment"
 
 # Detailed Capabilities
 capabilities_detail:
   primary_capability:
     supported: true
-    description: "Comprehensive article explanation using multi-agent approach"
+    description: "Multi-agent article analysis using concurrent specialist agents"
     features:
-      - "Code examples and technical implementations"
-      - "Concise summaries and TL;DR responses"
-      - "Step-by-step educational explanations"
-      - "Relatable analogies for complex concepts"
-      - "Critical analysis of arguments and methodology"
-    limitations: "Requires article text input; processing time depends on content length"
+      - "5 concurrent specialist agents (Developer, Summarizer, Explainer, Analogy Creator, Vulnerability Expert)"
+      - "LangChain-based agent orchestration with asyncio.gather"
+      - "OpenRouter API integration via ChatOpenAI"
+      - "Synthesis agent combines all specialist outputs"
+      - "Structured markdown output with labeled sections"
+    limitations: "Requires OPENROUTER_API_KEY; text-only input; no streaming; no interactive Q&A"
 
   secondary_capability:
     supported: false
     planned_version: "2.0.0"
-    description: "Real-time document processing and interactive Q&A"
+    description: "Not supported by code"
 
 # Requirements
 requirements:
   packages:
-    - "langchain"
-    - "langchain-openai"
     - "langchain-core"
+    - "langchain-openai"
     - "pydantic"
     - "python-dotenv"
+    - "bindu"
   system:
-    - "Python 3.8+"
-  min_memory_mb: 512
+    - "Python 3.12+"
+  min_memory_mb: 256
 
 # Performance Metrics
 performance:
-  avg_processing_time_ms: 5000
-  max_concurrent_requests: 5
-  memory_per_request_mb: 512
-  scalability: horizontal
+  avg_processing_time_ms: 20000
+  max_concurrent_requests: 1
+  memory_per_request_mb: 256
+  scalability: vertical
 
 # Tool Restrictions
 allowed_tools:
@@ -79,156 +76,244 @@ allowed_tools:
 # Rich Documentation
 documentation:
   overview: |
-    The article explanation skill uses a multi-agent architecture to analyze technical articles from different perspectives.
-    Five specialized agents work concurrently: Developer provides code examples, Summarizer creates concise overviews,
-    Explainer delivers detailed educational content, Analogy Creator creates relatable comparisons, and Vulnerability Expert
-    provides critical analysis. The results are synthesized into a comprehensive response.
+    Multi-agent system built on LangChain that analyzes article text using 5 specialist agents running concurrently.
+    Each agent uses a role-specific prompt template and ChatOpenAI model via OpenRouter.
+    Agents run in parallel using asyncio.gather, then a synthesis agent combines outputs into structured markdown.
+    Uses temperature=0 for deterministic outputs.
 
   use_cases:
     when_to_use:
-      - "Understanding complex technical articles and research papers"
-      - "Getting code examples for technical concepts"
-      - "Learning difficult topics through analogies and step-by-step explanations"
-      - "Critical analysis of article content and methodology"
-      - "Creating educational content from technical documentation"
+      - "Multi-perspective analysis of technical articles"
+      - "Educational content requiring developer, beginner, and analogy perspectives"
+      - "Security assessment of technical concepts"
+      - "Comprehensive topic explanations with code examples"
 
     when_not_to_use:
-      - "Real-time conversation or chat interactions"
-      - "Analysis of non-text content (images, videos)"
-      - "Very short content (less than 100 words)"
-      - "Non-technical or creative writing analysis"
+      - "Real-time chat or conversational interfaces"
+      - "Non-text content (images, PDFs, videos)"
+      - "Interactive Q&A or follow-up questions"
+      - "Streaming responses"
 
   input_structure: |
-    Accepts article content as plain text or JSON.
+    JSON-RPC 2.0 message with text in parts array.
 
     Example:
     {
-      "article_content": "Your technical article text here...",
-      "focus_areas": ["code_examples", "summarization", "analogies"]
+      "jsonrpc": "2.0",
+      "method": "message/send",
+      "params": {
+        "message": {
+          "role": "user",
+          "parts": [
+            {
+              "kind": "text",
+              "text": "Explain the concept of 'RAG systems' using multiple perspectives..."
+            }
+          ],
+          "kind": "message",
+          "messageId": "b3e2f650-5616-49ad-b187-d93cbbE00001",
+          "contextId": "b3e2f650-5616-49ad-b187-d93cbbE00002",
+          "taskId": "b3e2f650-5616-49ad-b187-d93cbbE00003"
+        },
+        "skillId": "article-explain-v1",
+        "configuration": {
+          "acceptedOutputModes": ["application/json"]
+        }
+      },
+      "id": "b3e2f650-5616-49ad-b187-d93cbbE00003"
     }
 
-    Constraints:
-    - Article content should be at least 100 words
-    - Maximum recommended length: 10,000 words
-    - Supports technical and academic content
-
   output_format: |
-    Comprehensive analysis combining all specialist perspectives.
+    JSON-RPC 2.0 result with task history and artifacts containing markdown analysis.
 
     Success Response:
     {
-      "success": true,
+      "jsonrpc": "2.0",
+      "id": "b3e2f650-5616-49ad-b187-d93cbbe00003",
       "result": {
-        "analysis": "Combined specialist analysis with sections for summary, explanation, code examples, analogies, and critical review",
-        "metadata": {
-          "processing_time_ms": 5000,
-          "specialists_involved": ["Developer", "Summarizer", "Explainer", "AnalogyCreator", "VulnerabilityExpert"]
-        }
-      }
-    }
-
-    Error Response:
-    {
-      "success": false,
-      "error": {
-        "code": "INVALID_INPUT",
-        "message": "Article content is required and must be at least 100 characters"
+        "id": "b3e2f650-5616-49ad-b187-d93cbbe00003",
+        "context_id": "b3e2f650-5616-49ad-b187-d93cbbe00002",
+        "kind": "task",
+        "status": {
+          "state": "completed",
+          "timestamp": "2026-03-12T09:39:05.731682+00:00"
+        },
+        "history": [
+          {
+            "role": "assistant",
+            "parts": [
+              {
+                "kind": "text",
+                "text": "### Article Analysis:\n\n# Comprehensive Analysis of [Topic]\n\n## Developer Perspective\n[Technical details, code examples, APIs]\n\n## Summarizer Perspective\n[Concise summary, key points]\n\n## Explainer Perspective\n[Step-by-step explanation]\n\n## Analogy Creator Perspective\n[Real-world analogies]\n\n## Vulnerability Expert Perspective\n[Security risks, mitigation]\n\n## Final Synthesis\n[Combined insights]\n\n---\n*Analysis performed by AI Article Explainer Agent*\n*Specialist inputs: Developer, Summarizer, Explainer, Analogy Creator, Vulnerability Expert*\n*Model: gpt-4o*"
+              }
+            ]
+          }
+        ],
+        "artifacts": [
+          {
+            "name": "result",
+            "parts": [{"kind": "text", "text": "..."}]
+          }
+        ]
       }
     }
 
   error_handling:
-    - "Invalid input: Returns clear error message for missing or too short content"
-    - "API failures: Graceful degradation with partial results when possible"
-    - "Timeout behavior: 30-second timeout with partial analysis warning"
-    - "Validation errors: Specific guidance on input requirements"
-    - "Resource limit handling: Queue system for concurrent request management"
+    - "Missing content: Returns 'Error: No article content provided in the user message.'"
+    - "API key missing: Raises ValueError with OPENROUTER_API_KEY requirement"
+    - "Agent errors: Catches exceptions and returns 'Error during article explanation: {error}'"
+    - "Individual agent failures: Returns 'Error: {error}' in agent output"
+    - "No timeout mechanism in code"
+    - "No validation for content length"
 
   examples:
-    - title: "Technical Article Analysis"
+    - title: "RAG Systems Analysis"
       input:
-        article_content: "Machine learning models require careful feature engineering and hyperparameter tuning..."
-        focus_areas: ["code_examples", "explanation"]
+        parts:
+          - kind: "text"
+            text: "Explain the following technical article topic using multiple perspectives including developer analysis, summarization, conceptual explanation, analogy creation, and security or vulnerability considerations. Article topic: 'How Retrieval-Augmented Generation (RAG) improves the accuracy of large language models.'"
       output:
-        success: true
-        result:
-          analysis: "### Summary\n\n- Machine learning requires feature engineering and tuning...\n\n### Code Examples\n\n```python\n# Feature engineering example\nfrom sklearn.preprocessing import StandardScaler\n```"
-        metadata:
-          processing_time_ms: 4500
+        text: |
+          ### Article Analysis:
 
-    - title: "Research Paper Explanation"
+          # Comprehensive Analysis of Retrieval-Augmented Generation (RAG)
+
+          ## Developer Perspective
+          Retrieval-Augmented Generation (RAG) leverages advanced technical components to enhance language model capabilities. Key elements include embeddings, vector databases, retrieval pipelines, and integration with large language models (LLMs)...
+
+          ## Summarizer Perspective
+          RAG enhances large language models by integrating external data retrieval, improving accuracy and relevance...
+
+          ## Explainer Perspective
+          RAG is a technique that combines retrieval systems and generative models to improve the accuracy and relevance of generated content...
+
+          ## Analogy Creator Perspective
+          RAG can be likened to a chef using a recipe book to select the right ingredients for a dish...
+
+          ## Vulnerability Expert Perspective
+          RAG systems face several security risks, including data leakage, hallucination, injection attacks...
+
+          ## Final Synthesis
+          Retrieval-Augmented Generation (RAG) represents a significant advancement in enhancing the capabilities of large language models...
+
+          ---
+          *Analysis performed by AI Article Explainer Agent*
+          *Specialist inputs: Developer, Summarizer, Explainer, Analogy Creator, Vulnerability Expert*
+          *Model: gpt-4o*
+
+    - title: "Microservices Architecture Analysis"
       input:
-        article_content: "Recent advances in transformer architecture have revolutionized NLP..."
+        parts:
+          - kind: "text"
+            text: "Explain the concept of 'Microservices Architecture in Modern Cloud Systems' using multiple perspectives..."
       output:
-        success: true
-        result:
-          analysis: "### Summary\n\n- Transformers revolutionized NLP...\n\n### Analogies\n\nTransformers are like a team of expert translators..."
-        metadata:
-          processing_time_ms: 5200
+        text: |
+          ### Article Analysis:
+
+          # Comprehensive Analysis of Microservices Architecture in Modern Cloud Systems
+
+          ## Developer Perspective
+          Microservices architecture involves decomposing applications into smaller, independent services...
+
+          ## Summarizer Perspective
+          Microservices architecture breaks down applications into smaller, independent services...
+
+          ## Explainer Perspective
+          Microservices architecture is a design approach where software applications are composed of small, independent services...
+
+          ## Analogy Creator Perspective
+          Imagine a bustling city where each building has a specific purpose...
+
+          ## Vulnerability Expert Perspective
+          Microservices architecture presents several security vulnerabilities...
+
+          ## Final Synthesis
+          Microservices architecture offers a flexible and scalable approach to software development...
+
+          ---
+          *Analysis performed by AI Article Explainer Agent*
+          *Specialist inputs: Developer, Summarizer, Explainer, Analogy Creator, Vulnerability Expert*
+          *Model: gpt-4o*
 
   best_practices:
     for_developers:
-      - "Ensure proper error handling for API failures"
-      - "Implement timeout mechanisms for long articles"
-      - "Use async patterns for concurrent agent execution"
-      - "Cache results for repeated requests"
+      - "Set OPENROUTER_API_KEY environment variable before running"
+      - "Use async/await patterns - all agent operations are async"
+      - "Handle ValueError for missing API keys"
+      - "Expect concurrent execution of 5 specialist agents via asyncio.gather"
+      - "Model name defaults to 'gpt-4o' but configurable via MODEL_NAME env var"
 
     for_orchestrators:
-      - "Route technical article analysis requests to this skill"
-      - "Chain with document preprocessing skills for PDF handling"
-      - "Consider load balancing for concurrent requests"
-      - "Monitor processing times and implement retry logic"
-      - "Use skill for educational content creation workflows"
+      - "Route multi-perspective article analysis requests to this skill"
+      - "Expect 15-25 second processing time for concurrent agent execution"
+      - "Skill requires text input in message.parts[0].text format"
+      - "Output is structured markdown with 6 sections (5 specialists + synthesis)"
+      - "No support for streaming, interactive Q&A, or follow-up questions"
+      - "Skill uses temperature=0 for deterministic outputs"
 
   installation: |
-    No additional installation required beyond the main agent dependencies.
+    Install dependencies and set environment variables.
 
-    Required packages are included in the main agent setup:
-    - langchain and langchain-openai for LLM integration
-    - pydantic for data validation
-    - python-dotenv for environment management
+    Required environment variables:
+    OPENROUTER_API_KEY=<your-openrouter-api-key>
+    MODEL_NAME=gpt-4o  # Optional, defaults to gpt-4o
+
+    Required packages (install via uv or pip):
+    - langchain-core
+    - langchain-openai
+    - pydantic
+    - python-dotenv
+    - bindu
+
+    Run agent:
+    python -m article_explainer_agent
+
+    Server runs on http://127.0.0.1:3773 by default.
 
   versioning:
     - version: "1.0.0"
-      date: "2024-01-01"
-      changes: "Initial release with 5 specialist agents"
+      date: "2026-03-12"
+      changes: "Initial release with 5 concurrent specialist agents using LangChain and OpenRouter"
     - version: "1.1.0"
       status: "planned"
-      changes: "Enhanced code example generation and interactive Q&A"
+      changes: "Not supported by code"
 
 # Assessment fields for skill negotiation
 assessment:
   keywords:
-    - "article explanation"
-    - "technical analysis"
-    - "code examples"
-    - "summarization"
-    - "educational content"
-    - "analogy creation"
-    - "critical analysis"
+    - "article"
+    - "explain"
+    - "analysis"
+    - "perspectives"
+    - "developer"
+    - "summarize"
+    - "analogy"
+    - "vulnerability"
+    - "security"
     - "multi-agent"
+    - "technical"
 
   specializations:
-    - domain: "technical_documentation"
+    - domain: "multi-perspective-analysis"
       confidence_boost: 0.4
-    - domain: "research_papers"
+    - domain: "technical-article-analysis"
       confidence_boost: 0.3
-    - domain: "educational_content"
-      confidence_boost: 0.3
+    - domain: "educational-explanation"
+      confidence_boost: 0.2
 
   anti_patterns:
-    - "General chat conversation"
-    - "Creative writing assistance"
-    - "Non-technical content analysis"
-    - "Real-time Q&A sessions"
+    - "Real-time chat or conversation"
+    - "Interactive Q&A or follow-up questions"
+    - "Non-text content (images, PDFs, videos)"
+    - "Streaming responses"
+    - "Single-perspective analysis"
 
   complexity_indicators:
     simple:
-      - "Short article summary request"
-      - "Basic code example request"
+      - "Not supported - always runs all 5 agents"
     medium:
-      - "Detailed explanation with analogies"
-      - "Multi-section analysis"
+      - "Standard multi-perspective article analysis"
+      - "Technical concept explanation with all 5 specialists"
     complex:
-      - "Comprehensive analysis with all specialists"
-      - "Critical methodology review"
-      - "Advanced technical concept explanation"
+      - "Long-form technical articles requiring comprehensive analysis"
+      - "Complex topics needing developer, educational, and security perspectives"
