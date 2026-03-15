@@ -28,11 +28,6 @@
       "key": "OPENROUTER_API_KEY",
       "description": "OpenRouter API key for LLM calls",
       "required": true
-    },
-    {
-      "key": "MODEL_NAME",
-      "description": "Model name to use (default: openai/gpt-4o)",
-      "required": false
     }
   ]
 }
