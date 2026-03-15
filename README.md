@@ -394,7 +394,3 @@ This agent uses a **concurrent multi-specialist architecture**:
   <a href="https://discord.gg/3w5zuYUuwt">💬 Join Discord</a> •
   <a href="https://bindus.directory">🌐 Agent Directory</a>
 </p>
-
-#   a r t i c l e - e x p l a i n e r - a g e n t 
- 
- 
